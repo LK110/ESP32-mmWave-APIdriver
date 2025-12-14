@@ -1,5 +1,4 @@
-#include "mr24hpc_port.h"
-#include "sdkconfig.h"
+#include "mr24hpc_uart.h"
 #include "driver/uart.h"
 #include "driver/gpio.h"
 #include "esp_mac.h"

@@ -1,7 +1,7 @@
 #include "mr24hpc_types.h"
 #include <stdint.h>
 #include <stdbool.h>
-#include "mr24hpc_port.h"
+#include "mr24hpc_uart.h"
 
 // Interni state parsera
 typedef struct {
