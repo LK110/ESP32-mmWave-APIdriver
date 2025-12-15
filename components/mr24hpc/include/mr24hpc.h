@@ -3,7 +3,8 @@
 #include <stdint.h>
 #include <esp_err.h>
 
-typedef void (*mr24hpc_callback_function)(const mr24hpc_state_t *state); //pokazivac na funkciju: (mr24hpc_state_t*) -> void
+//pokazivac na funkciju: (mr24hpc_state_t*) -> void
+typedef void (*mr24hpc_callback_function)(const mr24hpc_state_t *state);
 
 esp_err_t mr24hpc_init(void);
 esp_err_t mr24hpc_start(void);

@@ -11,7 +11,7 @@
 
 static SemaphoreHandle_t mr24hpc_mutex;
 
-void mr24hpc_port_uart_init(void)
+void mr24hpc_uart_init(void)
 {
     const uart_config_t cfg = {
         .baud_rate = MR24HPC_BAUDRATE,
@@ -29,7 +29,7 @@ void mr24hpc_port_uart_init(void)
     mr24hpc_mutex = xSemaphoreCreateMutex();
 }
 
-int mr24hpc_port_uart_read(uint8_t *buf, size_t len, uint32_t timeout_ms)
+int mr24hpc_uart_read(uint8_t *buf, size_t len, uint32_t timeout_ms)
 {
     return uart_read_bytes(
         MR24HPC_UART,
@@ -39,22 +39,22 @@ int mr24hpc_port_uart_read(uint8_t *buf, size_t len, uint32_t timeout_ms)
     );
 }
 
-int mr24hpc_port_uart_write(const uint8_t *buf, size_t len)
+int mr24hpc_uart_write(const uint8_t *buf, size_t len)
 {
     return uart_write_bytes(MR24HPC_UART, (const char *)buf, len);
 }
 
-uint32_t mr24hpc_port_get_time_ms(void)
+uint32_t mr24hpc_uart_get_time_ms(void)
 {
     return xTaskGetTickCount() * portTICK_PERIOD_MS;
 }
 
-void mr24hpc_port_lock(void)
+void mr24hpc_uart_lock(void)
 {
     xSemaphoreTake(mr24hpc_mutex, portMAX_DELAY);
 }
 
-void mr24hpc_port_unlock(void)
+void mr24hpc_uart_unlock(void)
 {
     xSemaphoreGive(mr24hpc_mutex);
 }
