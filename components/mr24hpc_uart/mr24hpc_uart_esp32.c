@@ -1,8 +1,9 @@
-#include "mr24hpc_uart.h"
 #include "driver/uart.h"
 #include "driver/gpio.h"
-#include "esp_mac.h"
+#include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
+
+#include "mr24hpc_uart.h"
 
 #define MR24HPC_UART       UART_NUM_1
 #define MR24HPC_UART_TX    GPIO_NUM_17
@@ -44,10 +45,10 @@ int mr24hpc_uart_write(const uint8_t *buf, size_t len)
     return uart_write_bytes(MR24HPC_UART, (const char *)buf, len);
 }
 
-uint32_t mr24hpc_uart_get_time_ms(void)
-{
-    return xTaskGetTickCount() * portTICK_PERIOD_MS;
-}
+// uint32_t mr24hpc_uart_get_time_ms(void)
+// {
+//     return xTaskGetTickCount() * portTICK_PERIOD_MS;
+// }
 
 void mr24hpc_uart_lock(void)
 {

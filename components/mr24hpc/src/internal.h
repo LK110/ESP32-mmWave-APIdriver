@@ -18,3 +18,6 @@ void mr24hpc_update_state(const mr24hpc_state_t *new_state);
 // Mutex za thread-safe access
 // extern void mr24hpc_lock(void);
 // extern void mr24hpc_unlock(void);
+
+// pomocne funkcije
+uint8_t calculate_checksum(const uint8_t *data, size_t len);
