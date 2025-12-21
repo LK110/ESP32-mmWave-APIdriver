@@ -4,20 +4,32 @@
 #include <mr24hpc_types.h>
 #include <mr24hpc_uart.h>
 
-// Interni state parsera
 typedef struct {
-    uint8_t buffer[256];
-    mr24hpc_state_t state; // trenutni "parsed" state senzora
+    mr24hpc_parser_state_t ps;
+    uint8_t ctrl;
+    uint8_t cmd;
+    uint16_t len; // 16-bit length
+    uint8_t data[32];
+    uint16_t data_idx;
 } mr24hpc_parser_t;
+
+typedef enum {
+    WAIT_H1,
+    WAIT_H2,
+    WAIT_CTRL,
+    WAIT_CMD,
+    WAIT_LEN1, // first (MSB) of 16-bit length
+    WAIT_LEN2, // second (MSB) of 16-bit length
+    WAIT_DATA,
+    WAIT_CHECKSUM
+} mr24hpc_parser_state_t;
 
 // Interni API drivera
 void mr24hpc_parser_init();
 void mr24hpc_parser_feed(uint8_t byte);
-void mr24hpc_update_state(const mr24hpc_state_t *new_state);
-
-// Mutex za thread-safe access
-// extern void mr24hpc_lock(void);
-// extern void mr24hpc_unlock(void);
+void mr24hpc_update_state(const mr24hpc_state_t *delta);
 
 // pomocne funkcije
 uint8_t calculate_checksum(const uint8_t *data, size_t len);
+void mr24hpc_state_lock(void);
+void mr24hpc_state_unlock(void);

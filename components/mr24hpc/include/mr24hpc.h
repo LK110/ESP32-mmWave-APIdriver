@@ -1,14 +1,20 @@
-#include "mr24hpc_types.h"
+//javni API za MR24HPC driver
+
 #include <stdint.h>
+#include <stdbool.h>
+
 #include <esp_err.h>
+
+#include "mr24hpc_types.h"
 
 //pokazivac na funkciju: (mr24hpc_state_t*) -> void
 typedef void (*mr24hpc_callback_function)(const mr24hpc_state_t *state);
 
 esp_err_t mr24hpc_init(void);
 esp_err_t mr24hpc_start(void);
-void mr24hpc_activate_underlying_open_functions(void);
+esp_err_t mr24hpc_activate_underlying_open_functions(void);
 //esp_err_t mr24hpc_stop(void);
 
-_Bool mr24hpc_get_state(mr24hpc_state_t *state_copy);
+bool mr24hpc_get_state(mr24hpc_state_t *state_copy);
 esp_err_t mr24hpc_register_callback(mr24hpc_callback_function cb_fuction);
+uint32_t mr24hpc_ms_since_last_update(void);

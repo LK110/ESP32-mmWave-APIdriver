@@ -32,7 +32,7 @@ void mr24hpc_uart_init(void)
 
 int mr24hpc_uart_read(uint8_t *buf, size_t len, uint32_t timeout_ms)
 {
-    return uart_read_bytes(
+    return uart_read_bytes( // thread-safe internally (doesnt need external mutex)
         MR24HPC_UART,
         buf,
         len,
@@ -45,17 +45,12 @@ int mr24hpc_uart_write(const uint8_t *buf, size_t len)
     return uart_write_bytes(MR24HPC_UART, (const char *)buf, len);
 }
 
-// uint32_t mr24hpc_uart_get_time_ms(void)
+// void mr24hpc_uart_lock(void)
 // {
-//     return xTaskGetTickCount() * portTICK_PERIOD_MS;
+//     xSemaphoreTake(mr24hpc_mutex, portMAX_DELAY);
 // }
 
-void mr24hpc_uart_lock(void)
-{
-    xSemaphoreTake(mr24hpc_mutex, portMAX_DELAY);
-}
-
-void mr24hpc_uart_unlock(void)
-{
-    xSemaphoreGive(mr24hpc_mutex);
-}
+// void mr24hpc_uart_unlock(void)
+// {
+//     xSemaphoreGive(mr24hpc_mutex);
+// }
