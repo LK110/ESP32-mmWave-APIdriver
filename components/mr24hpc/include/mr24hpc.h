@@ -1,9 +1,11 @@
+#pragma once
+
 //javni API za MR24HPC driver
 
 #include <stdint.h>
 #include <stdbool.h>
 
-#include <esp_err.h>
+#include "esp_err.h"
 
 #include "mr24hpc_types.h"
 

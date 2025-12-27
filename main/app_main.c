@@ -1,3 +1,6 @@
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
 #include "mr24hpc.h"
 
 void my_state_callback(const mr24hpc_state_t *state) {

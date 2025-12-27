@@ -1,16 +1,20 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-#include <freertos/queue.h>
-#include <esp_err.h>
-#include <freertos/semphr.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+#include "freertos/queue.h"
+#include "esp_timer.h"
+#include "esp_err.h"
+#include "freertos/semphr.h"
 
 #include "mr24hpc.h"
 #include "mr24hpc_uart.h"
 #include "internal.h"
 
+static void mr24hpc_uart_task(void *arg);
+static void mr24hpc_driver_task(void *arg);
+uint8_t calculate_checksum(const uint8_t *data, size_t len);
 
 static QueueHandle_t uart_rx_queue = NULL;
 static mr24hpc_state_t global_senstor_state;
@@ -156,14 +160,7 @@ static void mr24hpc_driver_task(void *arg) {
 }
 
 
-// ================ pomocne funkcije ================
-// iz internal.h
-
-uint8_t calculate_checksum(const uint8_t *data, size_t len) {
-    uint32_t sum = 0;
-    for (int i = 0; i < len; ++i) sum += data[i];
-    return (uint8_t)(sum & 0xFF);
-}
+// ================ semafori ================
 
 void mr24hpc_state_lock(void) {
     xSemaphoreTake(state_mutex, portMAX_DELAY);

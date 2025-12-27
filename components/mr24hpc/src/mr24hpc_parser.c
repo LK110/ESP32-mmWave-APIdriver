@@ -1,14 +1,17 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <esp_log.h>
-#include <esp_timer.h>
+#include "esp_log.h"
+#include "esp_timer.h"
 
+#include "mr24hpc.h"
 #include "mr24hpc_types.h"
 #include "internal.h"
 
 #define MR24_HEADER_1 0x53
 #define MR24_HEADER_2 0x59
+
+uint8_t calculate_checksum(const uint8_t *data, size_t len);
 
 static mr24hpc_parser_t parser;
 
@@ -165,4 +168,12 @@ static void handle_frame(uint8_t ctrl,
 
     update.last_update_ms = mr24hpc_ms_since_last_update();
     mr24hpc_update_state(&update);
+}
+
+
+// ================ pomocne funkcije ================
+uint8_t calculate_checksum(const uint8_t *data, size_t len) {
+    uint32_t sum = 0;
+    for (int i = 0; i < len; ++i) sum += data[i];
+    return (uint8_t)(sum & 0xFF);
 }
