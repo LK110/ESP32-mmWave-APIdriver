@@ -30,10 +30,11 @@ typedef struct {
 void mr24hpc_parser_init();
 void mr24hpc_parser_feed(uint8_t byte);
 void mr24hpc_update_state(const mr24hpc_state_t *delta);
-static void handle_frame(uint8_t ctrl, uint8_t cmd, const uint8_t *data, uint16_t len);
+void handle_frame(uint8_t ctrl, uint8_t cmd, const uint8_t *data, uint16_t len);
 
 void mr24hpc_state_lock(void);
 void mr24hpc_state_unlock(void);
 
 // pomocne funkcije
 uint8_t calculate_checksum(const uint8_t *data, size_t len);
+uint32_t mr24hpc_ms_since_last_update(void);

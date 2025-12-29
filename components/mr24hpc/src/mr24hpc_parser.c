@@ -11,8 +11,6 @@
 #define MR24_HEADER_1 0x53
 #define MR24_HEADER_2 0x59
 
-uint8_t calculate_checksum(const uint8_t *data, size_t len);
-
 static mr24hpc_parser_t parser;
 
 void mr24hpc_parser_init(void) {
@@ -96,17 +94,14 @@ void mr24hpc_parser_feed(uint8_t byte) {
     }
 }
 
-static void handle_frame(uint8_t ctrl,
-                         uint8_t cmd,
-                         const uint8_t *data,
-                         uint16_t len)
+void handle_frame(uint8_t ctrl, uint8_t cmd, const uint8_t *data, uint16_t len)
 {
     // trebam samo report stanje senzora
     if (ctrl != 0x01) {
         return;
     }
 
-    mr24hpc_state_t update = {0}; // novi update stanja, sve polja na 0
+    mr24hpc_state_t update = {0}; // novi update stanja, sva polja na 0
 
     switch (cmd) {
 

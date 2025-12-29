@@ -18,5 +18,4 @@ esp_err_t mr24hpc_activate_underlying_open_functions(void);
 //esp_err_t mr24hpc_stop(void);
 
 bool mr24hpc_get_state(mr24hpc_state_t *state_copy);
-esp_err_t mr24hpc_register_callback(mr24hpc_callback_function cb_fuction);
-uint32_t mr24hpc_ms_since_last_update(void);
+esp_err_t mr24hpc_register_callback(mr24hpc_callback_function cb_function);

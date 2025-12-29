@@ -1,8 +1,14 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "esp_log.h"
 
 #include "mr24hpc.h"
 
+static const char *TAG = "mr24hpc";
+
+// called from
+// mr24hpc.c : mr24hpc_update_state(...)
+// when new state is available
 void my_state_callback(const mr24hpc_state_t *state) {
     // TODO: napisi callback funkciju koja obrađuje novo stanje senzora
     return;
@@ -16,8 +22,14 @@ void app_main(void) {
     mr24hpc_state_t state;
     while(1) {
         if(mr24hpc_get_state(&state)) {
-            // obrada
+            ESP_LOGI(TAG, "Successfully retrieved sensor state:\n");
+            printf("Presence: %s\n", state.presence ? "Yes" : "No");
+            printf("Motion State: %u\n", state.motion_state);
+            printf("Distance (m): %.2f\n", state.distance_m);
+            printf("Speed (m/s): %.2f\n", state.speed_m_s);
+            printf("Body Signals: %u\n", state.body_signals);
+            printf("Last Update (ms): %u\n", state.last_update_ms);
         }
-        vTaskDelay(pdMS_TO_TICKS(500));
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
