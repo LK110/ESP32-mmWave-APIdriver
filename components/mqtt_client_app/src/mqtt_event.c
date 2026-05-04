@@ -8,6 +8,8 @@
 #include "mr24hpc.h"
 #include "mqtt_app.h"
 #include "mqtt_event.h"
+#include "../private_include/mqtt_json.h"
+#include "../private_include/mqtt_utils.h"
 
 static const char *TAG = "* mqtt_app *";
 
@@ -23,12 +25,6 @@ static void process_check_connection_status_message(mqtt_app_context_t *ctx,
                                                     size_t topic_len,
                                                     const char *data,
                                                     int data_len);
-static bool topic_matches(const char *topic, size_t topic_len, const char *expected_topic);
-static bool copy_payload(char *dst, size_t dst_size, const char *data, int d_len);
-static bool parse_u32_decimal(const char *text, uint32_t *value_out);
-static bool extract_json_rate_value(const char *json,
-                                    const char *key,
-                                    uint32_t *value_out);
 
 // ==================== Event Handler ====================
 
@@ -37,7 +33,7 @@ void mqtt_app_event_handler(void *handler_args,
                             int32_t event_id,
                             void *event_data)
 {
-    (void)base;
+    (void)base; // unused parameter, part of the required signature for esp_event_handler_t
 
     mqtt_app_context_t *ctx = (mqtt_app_context_t *)handler_args;
     esp_mqtt_event_handle_t event = event_data;
@@ -149,96 +145,4 @@ static void process_check_connection_status_message(mqtt_app_context_t *ctx,
     ESP_LOGI(TAG, "--> received check sensor status command");
 
     trigger_heartbeat_now();
-}
-
-// ==================== Helper Functions ====================
-
-static bool topic_matches(const char *topic, size_t topic_len, const char *expected_topic)
-{
-    if (!topic || !expected_topic)
-        return false;
-
-    size_t expected_len = strlen(expected_topic);
-
-    return (topic_len == expected_len) && (strncmp(topic, expected_topic, topic_len) == 0);
-}
-
-static bool copy_payload(char *dst, size_t dst_size, const char *data, int d_len)
-{
-    if (!dst || !data || d_len <= 0 || (size_t)d_len >= dst_size)
-        return false;
-
-    memcpy(dst, data, (size_t)d_len);
-    dst[d_len] = '\0';
-    return true;
-}
-
-static bool parse_u32_decimal(const char *text, uint32_t *value_out)
-{
-    if (!text || !value_out || *text == '\0')
-        return false;
-
-    uint32_t value = 0;
-    for (const char *p = text; *p != '\0'; ++p)
-    {
-        if (*p < '0' || *p > '9')
-            return false;
-
-        uint32_t digit = (uint32_t)(*p - '0');
-        if (value > (UINT32_MAX - digit) / 10U)
-            return false;
-
-        value = value * 10U + digit;
-    }
-
-    *value_out = value;
-    return true;
-}
-
-static bool extract_json_rate_value(const char *json,
-                                    const char *key,
-                                    uint32_t *value_out)
-{
-    if (!json || !key || !value_out)
-        return false;
-
-    char key_pattern[64];
-    int key_len = snprintf(key_pattern, sizeof(key_pattern), "\"%s\"", key);
-    if (key_len <= 0 || (size_t)key_len >= sizeof(key_pattern))
-        return false;
-
-    const char *key_pos = strstr(json, key_pattern);
-    if (!key_pos)
-        return false;
-
-    const char *value_pos = strchr(key_pos + key_len, ':');
-    if (!value_pos)
-        return false;
-
-    ++value_pos;
-    while (*value_pos == ' ' || *value_pos == '\t' || *value_pos == '\n' || *value_pos == '\r')
-        ++value_pos;
-
-    bool quoted = (*value_pos == '"');
-    if (quoted)
-        ++value_pos;
-
-    char number_buf[16];
-    size_t i = 0;
-    while (*value_pos >= '0' && *value_pos <= '9')
-    {
-        if (i >= sizeof(number_buf) - 1)
-            return false;
-        number_buf[i++] = *value_pos++;
-    }
-
-    if (i == 0)
-        return false;
-
-    number_buf[i] = '\0';
-
-    if (quoted && *value_pos != '"')
-        return false;
-
-    return parse_u32_decimal(number_buf, value_out);
 }

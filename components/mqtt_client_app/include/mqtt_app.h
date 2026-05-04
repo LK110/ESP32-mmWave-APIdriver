@@ -17,6 +17,7 @@
 #define MQTT_TOPIC_SENSOR_STATUS_CHECK "/room/" ROOM_ID "/device/" DEVICE_ID "/sensor/status/check" // esp is subscriber to this topic
                                                                                                     // receives "check connection" command to trigger heartbeat immediately
 #define MQTT_TOPIC_RESET "/room/" ROOM_ID "/device/" DEVICE_ID "/reset"                             // reset notification topic published once per boot on first MQTT connect
+
 void mqtt_app_start(const char *device_id,
                     const char *room_id,
                     const char *connection_status_topic,
@@ -32,6 +33,15 @@ void mqtt_app_publish_sensor_status(const char *topic, const char *status, uint3
 void mqtt_app_publish_state(const char *topic, const mr24hpc_state_t *state);
 void mqtt_app_publish_uof_state(const char *topic, const UOF_mr24hpc_state_t *state);
 void mqtt_app_publish_reset(const char *topic, uint32_t hb_rate, uint32_t sensor_rate);
+
+// global context (defined in mqtt_app.c)
+extern mqtt_app_context_t g_ctx;
+
+// heartbeat watchdog: offset (ms) added to 3 * hb_interval to determine dead timeout
+#define HEARTBEAT_DEAD_OFFSET_MS 5000
+
+void mqtt_app_heartbeat_seen(void);                           // resets the watchdog and marks sensor alive
+void mqtt_app_update_watchdog_interval(uint32_t interval_ms); // update watchdog timeout when heartbeat interval changes
 
 bool mqtt_app_is_connected(void);
 void mqtt_app_wait_connected(TickType_t timeout_ticks);

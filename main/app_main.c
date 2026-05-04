@@ -110,6 +110,7 @@ static void on_state_change(const mr24hpc_state_t *state)
 static void on_hb_rate_change(uint32_t interval_ms)
 {
     set_heartbeat_interval_ms(interval_ms);
+    mqtt_app_update_watchdog_interval(interval_ms);
     ESP_LOGW(TAG, "Heartbeat interval changed to %lu ms", interval_ms);
 }
 
@@ -122,5 +123,6 @@ static void on_sensor_rate_change(uint32_t interval_ms)
 static void on_heartbeat_detected(void)
 {
     ESP_LOGW(TAG, "Heartbeat detected");
+    mqtt_app_heartbeat_seen();
     mqtt_app_publish_sensor_status(MQTT_TOPIC_SENSOR_STATUS, "alive", get_heartbeat_interval_ms());
 }

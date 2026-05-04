@@ -5,6 +5,7 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/event_groups.h"
+#include "freertos/timers.h"
 #include "mqtt_client.h"
 
 #define MQTT_CONNECTED_BIT (1 << 0)
@@ -40,4 +41,8 @@ typedef struct
 
     uint32_t state_payload_seq;
     uint32_t sensor_status_payload_seq;
+    /* Heartbeat watchdog */
+    TimerHandle_t hb_watchdog_timer;
+    uint32_t hb_dead_offset_ms;
+    uint8_t sensor_alive; // 1 = alive, 0 = dead
 } mqtt_app_context_t;
