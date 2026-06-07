@@ -46,8 +46,8 @@ esp_err_t wifi_manager_init(void)
 
     wifi_config_t wifi_config = {
         .sta = {
-            .ssid = WIFI_SSID,
-            .password = WIFI_PASSWORD,
+            .ssid = WIFI_SSID,         // loaded at compile time from .env file
+            .password = WIFI_PASSWORD, // loaded at compile time from .env file
         },
     };
 

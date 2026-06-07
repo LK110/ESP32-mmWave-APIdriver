@@ -9,13 +9,13 @@
 #include "mqtt_client.h"
 
 #define MQTT_CONNECTED_BIT (1 << 0)
-#define MQTT_RECONNECT_DELAY_MS 100
 
+#define MQTT_RECONNECT_DELAY_MS 3000
 #define MQTT_KEEPALIVE_SEC 10
-#define MQTT_LWT_WILL_DELAY_SEC 5 // gives X seconds for the recconect
+#define MQTT_LWT_WILL_DELAY_SEC 10 // gives X seconds for the recconect before the LWT message is published
 #define MQTT_SESSION_EXPIRY_SEC 3600
 
-#define MQTT_BROKER_URI "mqtt://" MQTT_BROKER_IP ":1883" // loaded at compile time from .env file
+#define MQTT_BROKER_URI "mqtt://" MQTT_BROKER_IP ":1883" // MQTT_BROKER_IP is loaded at compile time
 
 typedef void (*mqtt_hb_rate_change_cb_t)(uint32_t interval_ms);
 typedef void (*mqtt_sensor_rate_change_cb_t)(uint32_t interval_ms);

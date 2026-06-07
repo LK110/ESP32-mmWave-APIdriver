@@ -219,7 +219,7 @@ static void heartbeatTask(void *arg)
         uint32_t interval_ms = get_heartbeat_interval_ms();
 
         uart_write(g_heartbeat_packet, sizeof(g_heartbeat_packet));
-        vTaskDelay(interval_ms / portTICK_PERIOD_MS); // 30s
+        vTaskDelay(interval_ms / portTICK_PERIOD_MS);
     }
 }
 

@@ -19,14 +19,16 @@ else()
     message(WARNING ".env file not found, WiFi credentials may be missing")
 endif()
 
-if(DEFINED ENV{WIFI_SSID} AND DEFINED ENV{WIFI_PASSWORD} AND DEFINED ENV{MQTT_BROKER_IP})
+if(DEFINED ENV{WIFI_SSID} AND DEFINED ENV{WIFI_PASSWORD} AND DEFINED ENV{MQTT_BROKER_IP} AND DEFINED ENV{MQTT_USERNAME} AND DEFINED ENV{MQTT_PASSWORD})
     add_compile_definitions(
         WIFI_SSID="$ENV{WIFI_SSID}"
         WIFI_PASSWORD="$ENV{WIFI_PASSWORD}"
         MQTT_BROKER_IP="$ENV{MQTT_BROKER_IP}"
+        MQTT_USERNAME="$ENV{MQTT_USERNAME}"
+        MQTT_PASSWORD="$ENV{MQTT_PASSWORD}"
     )
 else()
-    message(FATAL_ERROR "WIFI_SSID or WIFI_PASSWORD or MQTT_BROKER_IP not set. Check your .env file.")
+    message(FATAL_ERROR "One or more environment variables not set. Check your .env file (WIFI_SSID, WIFI_PASSWORD, MQTT_BROKER_IP, MQTT_USERNAME, MQTT_PASSWORD).")
 endif()
 
 # -----------------------------

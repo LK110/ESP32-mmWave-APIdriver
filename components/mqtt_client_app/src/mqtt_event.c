@@ -52,7 +52,9 @@ void mqtt_app_event_handler(void *handler_args,
 
         // publish retained "online" message to LWT topic upon successful connection
         esp_mqtt_client_publish(client, ctx->connection_status_topic, "{\"status\":\"online\"}", 0, 1, 1); // QoS 1, retain=true
+        ESP_LOGI(TAG, "Published connection status: {\"status\":\"online\"}");
 
+        // send reset message on connect (e.g. after a reboot)
         if (!ctx->reset_message_sent && ctx->reset_topic)
         {
             uint32_t sensor_rate_ms = get_sensor_rate_interval_ms();
@@ -61,6 +63,7 @@ void mqtt_app_event_handler(void *handler_args,
             ctx->reset_message_sent = true;
         }
 
+        // subscribe to topics after connecting
         if (ctx->configuration_topic)
             esp_mqtt_client_subscribe_single(client, ctx->configuration_topic, 1); // QoS 1
         if (ctx->sensor_status_check_topic)
@@ -74,7 +77,6 @@ void mqtt_app_event_handler(void *handler_args,
         break;
 
     case MQTT_EVENT_DATA:
-    {
         const char *topic = event->topic;
         const char *data = event->data;
         int t_len = event->topic_len;
@@ -88,7 +90,6 @@ void mqtt_app_event_handler(void *handler_args,
         process_configuration_message(ctx, topic, (size_t)t_len, data, d_len);
         process_check_connection_status_message(ctx, topic, (size_t)t_len, data, d_len);
         break;
-    }
 
     default:
         break;

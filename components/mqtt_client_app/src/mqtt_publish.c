@@ -52,7 +52,7 @@ static uint32_t normalize_seq_after_overflow(uint32_t seq)
     return 0U;
 }
 
-void mqtt_app_publish_sensor_status(const char *topic, const char *status, uint32_t hb_interval)
+void mqtt_app_publish_sensor_status(const char *topic, const char *status, uint32_t hb_rate)
 {
     if (!g_ctx.client || !mqtt_app_is_connected() || !status || !topic)
         return;
@@ -64,13 +64,14 @@ void mqtt_app_publish_sensor_status(const char *topic, const char *status, uint3
              "{"
              "\"seq\":%" PRIu32 ","
              "\"sensor\":\"%s\","
-             "\"hb_interval\": %u"
+             "\"hb_rate\": %u"
              "}",
              seq,
              status,
-             (unsigned)hb_interval);
+             (unsigned)hb_rate);
 
     esp_mqtt_client_publish(g_ctx.client, topic, payload, 0, 0, 0); // QoS 0
+    ESP_LOGI(TAG, "Published sensor status: %s", payload);
 }
 
 void mqtt_app_publish_state(const char *topic, const mr24hpc_state_t *state)
@@ -94,6 +95,7 @@ void mqtt_app_publish_state(const char *topic, const mr24hpc_state_t *state)
              (unsigned)get_sensor_rate_interval_ms());
 
     esp_mqtt_client_publish(g_ctx.client, topic, payload, 0, 0, 0); // QoS 0
+    ESP_LOGI(TAG, "Published state: %s", payload);
 }
 
 void mqtt_app_publish_uof_state(const char *topic, const UOF_mr24hpc_state_t *state)
@@ -136,13 +138,14 @@ void mqtt_app_publish_reset(const char *topic, uint32_t hb_rate, uint32_t sensor
     snprintf(payload,
              sizeof(payload),
              "{"
-             "\"hb_rate\":%" PRIu32 ","
              "\"sensor_rate\":%" PRIu32 ","
+             "\"hb_rate\":%" PRIu32 ","
              "\"state_seq\":0,"
              "\"sensor_seq\":0"
              "}",
-             hb_rate,
-             sensor_rate);
+             sensor_rate,
+             hb_rate);
 
     esp_mqtt_client_publish(g_ctx.client, topic, payload, 0, 1, 0); // QoS 1, retain=false
+    ESP_LOGW(TAG, "Published reset message: %s", payload);
 }

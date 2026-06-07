@@ -18,6 +18,10 @@ static const char *TAG = "* mqtt_app *";
 mqtt_app_context_t g_ctx = {
     .client = NULL,
     .client_cfg = {
+        .credentials = {
+            .username = MQTT_USERNAME,                // loaded at compile time from .env file
+            .authentication.password = MQTT_PASSWORD, // loaded at compile time from .env file
+        },
         .broker.address.uri = MQTT_BROKER_URI,
         .network.reconnect_timeout_ms = MQTT_RECONNECT_DELAY_MS,
         .session.disable_clean_session = true,
