@@ -5,12 +5,15 @@
 #include "freertos/queue.h"
 #include "freertos/semphr.h"
 #include "esp_err.h"
+#include "esp_log.h"
 
 #include "mr24hpc.h"
 #include "mr24hpc_types_uof.h"
 #include "mr24hpc_parser.h"
 #include "mr24hpc_state_update.h"
 #include "mr24hpc_uart.h"
+
+static const char *TAG = "* MR24HPC *";
 
 static QueueHandle_t uart_rx_queue = NULL;
 SemaphoreHandle_t state_mutex = NULL;
@@ -207,6 +210,7 @@ static void query_task(void *arg)
             }
             vTaskDelay(pdMS_TO_TICKS(30));
         }
+        ESP_LOGW(TAG, "Sensor QUERY packets sent");
 
         vTaskDelay(pdMS_TO_TICKS(interval_ms));
     }
@@ -219,6 +223,7 @@ static void heartbeatTask(void *arg)
         uint32_t interval_ms = get_heartbeat_interval_ms();
 
         uart_write(g_heartbeat_packet, sizeof(g_heartbeat_packet));
+        ESP_LOGW(TAG, "Heartbeat PING sent");
         vTaskDelay(interval_ms / portTICK_PERIOD_MS);
     }
 }
